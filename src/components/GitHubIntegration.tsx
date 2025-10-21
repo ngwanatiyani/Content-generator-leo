@@ -64,7 +64,7 @@ export function GitHubIntegration({ open, onOpenChange }: GitHubIntegrationProps
         repo: repoName,
         path: "README.md",
         message: sha ? "Update README.md" : "Create README.md",
-        content: Buffer.from(readmeContent).toString("base64"),
+        content: btoa(readmeContent),
         ...(sha && { sha }),
       });
 
