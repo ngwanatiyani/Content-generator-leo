@@ -29,7 +29,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       }`}
     >
       <h1 className="text-5xl font-light tracking-tight text-foreground">
-        AI Content Generator
+        LEO AI
       </h1>
     </div>
   );
