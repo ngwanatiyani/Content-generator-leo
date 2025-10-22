@@ -58,7 +58,7 @@ export function AppSidebar({ onNewChat, onOpenGithub }: AppSidebarProps) {
                   variant="ghost"
                 >
                   <Github className="h-4 w-4" />
-                  {open && <span>GitHub Integration</span>}
+                  {open && <span>GitHub Export</span>}
                 </Button>
               </SidebarMenuItem>
 

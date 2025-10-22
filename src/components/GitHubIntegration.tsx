@@ -1,19 +1,17 @@
 import { useState } from "react";
-import { Github } from "lucide-react";
+import { Github, Download, Copy, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Octokit } from "@octokit/rest";
+import { Separator } from "@/components/ui/separator";
 
 interface GitHubIntegrationProps {
   open: boolean;
@@ -21,142 +19,153 @@ interface GitHubIntegrationProps {
 }
 
 export function GitHubIntegration({ open, onOpenChange }: GitHubIntegrationProps) {
-  const [token, setToken] = useState("");
-  const [repoOwner, setRepoOwner] = useState("");
-  const [repoName, setRepoName] = useState("");
-  const [readmeContent, setReadmeContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [readmeContent, setReadmeContent] = useState("# My AI Generated Project\n\n## Description\nAdd your generated content here...\n\n## Generated Content\nPaste your AI-generated content, code, or images here.\n\n## Usage\nDescribe how to use this project.\n");
   const { toast } = useToast();
 
-  const handleSubmit = async () => {
-    if (!token || !repoOwner || !repoName || !readmeContent) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all fields",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handleDownload = () => {
+    const blob = new Blob([readmeContent], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "README.md";
+    link.click();
+    URL.revokeObjectURL(url);
+    toast({
+      title: "Downloaded!",
+      description: "README.md file has been downloaded",
+    });
+  };
 
-    setIsSubmitting(true);
-
-    try {
-      const octokit = new Octokit({ auth: token });
-
-      // Check if README.md already exists
-      let sha: string | undefined;
-      try {
-        const { data } = await octokit.repos.getContent({
-          owner: repoOwner,
-          repo: repoName,
-          path: "README.md",
-        });
-        if ("sha" in data) {
-          sha = data.sha;
-        }
-      } catch (error) {
-        // File doesn't exist, which is fine
-      }
-
-      // Create or update README.md
-      await octokit.repos.createOrUpdateFileContents({
-        owner: repoOwner,
-        repo: repoName,
-        path: "README.md",
-        message: sha ? "Update README.md" : "Create README.md",
-        content: btoa(readmeContent),
-        ...(sha && { sha }),
-      });
-
-      toast({
-        title: "Success!",
-        description: "README.md has been posted to your GitHub repository",
-      });
-
-      onOpenChange(false);
-      setReadmeContent("");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to post to GitHub",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleCopy = () => {
+    navigator.clipboard.writeText(readmeContent);
+    toast({
+      title: "Copied!",
+      description: "README content copied to clipboard",
+    });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Github className="h-5 w-5" />
-            GitHub Integration
+            GitHub Export Guide
           </DialogTitle>
           <DialogDescription>
-            Post your code as a README file to your GitHub repository
+            Follow these simple steps to upload your content to GitHub
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="token">GitHub Personal Access Token</Label>
-            <Input
-              id="token"
-              type="password"
-              placeholder="ghp_xxxxxxxxxxxxx"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
+        <div className="space-y-6">
+          {/* Instructions Section */}
+          <div className="rounded-lg border bg-muted/50 p-4 space-y-3">
+            <h3 className="font-semibold text-lg">📋 How to Upload to GitHub</h3>
+            <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
+              <li>
+                <strong>Create a GitHub Account</strong> (if you don't have one)
+                <br />
+                <a 
+                  href="https://github.com/signup" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline inline-flex items-center gap-1 ml-4"
+                >
+                  Sign up at github.com <ExternalLink className="h-3 w-3" />
+                </a>
+              </li>
+              <li>
+                <strong>Create a New Repository</strong>
+                <br />
+                <span className="ml-4">Go to GitHub → Click "+" icon → "New repository" → Name it and create</span>
+              </li>
+              <li>
+                <strong>Download the README.md file</strong> using the button below
+              </li>
+              <li>
+                <strong>Upload to GitHub</strong>
+                <br />
+                <span className="ml-4">In your repository → Click "Add file" → "Upload files" → Drag README.md → Commit</span>
+              </li>
+            </ol>
+          </div>
+
+          <Separator />
+
+          {/* README Editor */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="readme" className="text-base font-semibold">
+                Edit Your README.md Content
+              </Label>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopy}
+                  className="gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleDownload}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Download README.md
+                </Button>
+              </div>
+            </div>
+            <Textarea
+              id="readme"
+              value={readmeContent}
+              onChange={(e) => setReadmeContent(e.target.value)}
+              rows={16}
+              className="font-mono text-sm"
+              placeholder="# My Project..."
             />
-            <p className="text-sm text-muted-foreground">
-              Create a token at GitHub Settings → Developer settings → Personal access tokens
+            <p className="text-xs text-muted-foreground">
+              💡 Tip: Paste your AI-generated content into this README template, then download and upload to GitHub
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="owner">Repository Owner</Label>
-              <Input
-                id="owner"
-                placeholder="username"
-                value={repoOwner}
-                onChange={(e) => setRepoOwner(e.target.value)}
-              />
+          {/* Quick Links */}
+          <div className="rounded-lg border bg-muted/50 p-4 space-y-2">
+            <h4 className="font-semibold text-sm">🔗 Quick Links</h4>
+            <div className="flex flex-wrap gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                asChild
+              >
+                <a 
+                  href="https://github.com/new" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="gap-2"
+                >
+                  Create New Repo <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                asChild
+              >
+                <a 
+                  href="https://docs.github.com/en/get-started/quickstart/create-a-repo" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="gap-2"
+                >
+                  GitHub Docs <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="repo">Repository Name</Label>
-              <Input
-                id="repo"
-                placeholder="my-repo"
-                value={repoName}
-                onChange={(e) => setRepoName(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="content">README Content</Label>
-            <Textarea
-              id="content"
-              placeholder="# My Project&#10;&#10;Your README content here..."
-              value={readmeContent}
-              onChange={(e) => setReadmeContent(e.target.value)}
-              rows={12}
-              className="font-mono text-sm"
-            />
           </div>
         </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Posting..." : "Post to GitHub"}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
