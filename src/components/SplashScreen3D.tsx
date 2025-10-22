@@ -40,17 +40,17 @@ function AnimatedLogo() {
   return (
     <group>
       <points ref={particlesRef} geometry={particlesGeometry}>
-        <pointsMaterial size={0.02} color="#8B5CF6" transparent opacity={0.6} />
+        <pointsMaterial size={0.02} color="#B8956A" transparent opacity={0.6} />
       </points>
 
       <mesh ref={meshRef} position={[0, 0, 0]}>
         <boxGeometry args={[1.5, 1.5, 1.5]} />
-        <meshStandardMaterial color="#8B5CF6" metalness={0.8} roughness={0.2} />
+        <meshStandardMaterial color="#B8956A" metalness={0.8} roughness={0.2} />
       </mesh>
       
       <mesh ref={torusRef} position={[0, 0, 0]}>
         <torusGeometry args={[2, 0.3, 16, 100]} />
-        <meshStandardMaterial color="#06b6d4" metalness={0.9} roughness={0.1} />
+        <meshStandardMaterial color="#D4A574" metalness={0.9} roughness={0.1} />
       </mesh>
     </group>
   );
@@ -84,13 +84,13 @@ const SplashScreen3D = ({ onComplete }: SplashScreenProps) => {
         <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[10, 10, 5]} intensity={1} />
-          <pointLight position={[-10, -10, -5]} intensity={0.5} color="#8B5CF6" />
+          <pointLight position={[-10, -10, -5]} intensity={0.5} color="#B8956A" />
           <AnimatedLogo />
           <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
         </Canvas>
       </div>
       <h1 className="text-4xl font-bold text-foreground mt-8 animate-fade-in">
-        AI Content Generator
+        LEO
       </h1>
     </div>
   );

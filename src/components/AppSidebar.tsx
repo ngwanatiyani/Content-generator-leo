@@ -1,4 +1,4 @@
-import { Plus, Github, MessageSquare, Settings, Code } from "lucide-react";
+import { Plus, Github, MessageSquare, Code } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -27,7 +27,7 @@ export function AppSidebar({ onNewChat, onOpenGithub }: AppSidebarProps) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 py-4">
-            {open && "AI Content Generator"}
+            {open && "LEO"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -71,14 +71,6 @@ export function AppSidebar({ onNewChat, onOpenGithub }: AppSidebarProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <NavLink to="/" className="gap-2">
-                    <Settings className="h-4 w-4" />
-                    {open && <span>Settings</span>}
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
